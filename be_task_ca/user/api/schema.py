@@ -1,6 +1,6 @@
 from typing import List
 from uuid import UUID
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 
 class CreateUserRequest(BaseModel):
@@ -24,5 +24,10 @@ class AddToCartRequest(BaseModel):
     quantity: int
 
 
+class CartItemResponse(BaseModel):
+    item_id: UUID
+    quantity: int
+
+
 class AddToCartResponse(BaseModel):
-    items: List[AddToCartRequest]
+    items: List[CartItemResponse]

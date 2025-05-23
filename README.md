@@ -7,10 +7,26 @@ This project is a very naive implementation of a simple shop system. It mimics i
 Please answer the following questions:
 
 1. Why can we not easily split this project into two microservices?
+    - Shared Database which contradicts a core microservices principle. True microservice independence requires each service to manage its own data store.
+    - Cross-Service Repository Access. In a microservices setup, this would require inter-service communication (e.g., via HTTP or messaging), not direct access to another module’s database to prevent coupling between services.
+    - There are shared utility modules (e.g., common.py, database.py) used across domains, which further hinders separation. Proper microservices should isolate logic, infrastructure, and data per domain.
+    - Tight coupling, making independent deployment and scaling difficult.
 2. Why does this project not adhere to the clean architecture even though we have seperate modules for api, repositories, usecases and the model?
+    - Tight Coupling. User use cases directly depend on the Item repository, violating the principle that inner layers should not depend on outer layers. There's no abstraction (interface) to decouple them;
+   Use cases depend on the persistence layer (repository.py). Clean Architecture requires that inner layers (use cases) depend only on abstractions (interfaces), not on outer layers like persistence;
+   Dependency on the web framework within the business layer, raise FastAPI's HTTPException;
+    - Even though we are trying to have good structure it doesn't mean we have good architecture. Clean Architecture dictates: "Dependencies must always point inward." The inner layers (entities, use cases) should not depend on outer layers (frameworks, databases, APIs).
+   We would need to add Domain Entities, avoid depending on a framework, move DTOs to API level, add dedicated business entities, implement interface in repository.
 3. What would be your plan to refactor the project to stick to the clean architecture?
+    - Thoroughly review the existing codebase to identify business logic, data access code, and framework-specific elements.
+    - Clearly define and implement the layers of Clean Architecture:
+      - Core Layer: Create domain entities representing core business rules and models. These must be independent of any framework or database.
+      - Application Layer: Implement application-specific business rules and workflows that interact solely with domain entities.
+      - Interface Adapters: Define abstract interfaces for repositories that use cases will depend on. Relocate DTOs (schemas) and their conversion logic to this layer, specifically within the API adapter, as they are for external communication
+      - Infrastructure Layer: All connections to external databases, framework, aplications.
 4. How can you make dependencies between modules more explicit?
-
+    - Make sure to use interfaces for abstractions and not on specific implementations.
+    - Implement dependency injection, favor injecting dependencies through class constructors, FastAPI's built-in dependency injection system can be leveraged for managing dependencies at the API endpoint level, ensuring that services and repositories are provided correctly.
 *Please do not spend more than 2-3 hours on this task.*
 
 Stretch goals:

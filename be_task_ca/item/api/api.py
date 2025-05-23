@@ -18,15 +18,12 @@ async def post_item(
     dto: CreateItemRequest,
     repo: ItemInterface = Depends(get_item_repository)
 ) -> CreateItemResponse:
-    """Handles the creation of a new item."""
-
     item = Item(
         name=dto.name,
         description=dto.description,
         price=dto.price,
         quantity=dto.quantity
     )
-
     try:
         item = create_item(item, repo)
     except Exception as e:
@@ -44,7 +41,7 @@ async def post_item(
 @item_router.get("/")
 async def get_items(
     repo: ItemInterface = Depends(get_item_repository)
-) -> AllItemsRepsonse:
+) -> AllItemsResponse:
     items = get_all(repo)
     return AllItemsResponse(
         items=[
